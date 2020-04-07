@@ -35,19 +35,21 @@ def get_center_by_id(id):
 @app.route('/register', methods=['POST'])
 def register():
     request_data = request.get_json()
-    if Center.is_valid_object(request_data):
-        try:
-            Center.add_center(request_data['login'], request_data['password'], request_data['address'])
-            response = Response('', status=201, mimetype='application/json')
-            return response
-        except TypeError as te:
-            return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
-    else:
+
+    # Check if request_data object is valid
+    if not Center.is_valid_object(request_data):
         invalid_obj = {
             'error': "Valid Center must contain: login, password and address"
         }
-        response = Response(json.dumps(invalid_obj), 400)
+        return Response(json.dumps(invalid_obj), 400)
+
+    # If all ok try to add pet center
+    try:
+        Center.add_center(request_data['login'], request_data['password'], request_data['address'])
+        response = Response('', status=201, mimetype='application/json')
         return response
+    except TypeError as te:
+        return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
 
 
 @app.route('/login', methods=['GET'])  # Should be POST, but in task is listed as GET

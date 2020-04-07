@@ -12,7 +12,7 @@ def get_species():
 
 
 @app.route('/species/<int:id>')
-def get_speceies_by_id(id):
+def get_species_by_id(id):
     species = Species.get_species_by_id(id)
     return jsonify(species)
 
@@ -21,17 +21,18 @@ def get_speceies_by_id(id):
 @token_required
 def add_species():
     request_data = request.get_json()
-    if Species.is_valid_object(request_data):
-        try:
-            Species.add_species(request_data['name'], request_data['description'], request_data['price'])
-            response = Response('', status=201, mimetype='application/json')
-            return response
-        except TypeError as te:
-            return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
-    else:
+
+    # Check if request_data is valid Species object
+    if not Species.is_valid_object(request_data):
         invalid_obj = {
             'error': "Valid Species must contain: name, description and price"
         }
-        response = Response(json.dumps(invalid_obj), 400)
-        return response
+        return Response(json.dumps(invalid_obj), 400)
 
+    # If all ok, try to create new species
+    try:
+        Species.add_species(request_data['name'], request_data['description'], request_data['price'])
+        response = Response('', status=201, mimetype='application/json')
+        return response
+    except TypeError as te:
+        return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')

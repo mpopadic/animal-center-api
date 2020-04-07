@@ -21,31 +21,23 @@ def get_animal_by_id(id):
 @token_required
 def add_animal(caller_id):
     request_data = request.get_json()
-    if Animal.is_valid_object(request_data):
-        species = Species.query.filter_by(id=request_data['species']).first()
-        if species:
-            try:
-                Animal.add_animal(request_data['name'],
-                                  caller_id,
-                                  request_data['age'],
-                                  request_data['species'],
-                                  request_data['price'],
-                                  request_data['description'])
-                response = Response('', status=201, mimetype='application/json')
-                return response
-            except TypeError as te:
-                return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
-        else:
-            error_object = {
-                "error": "Species with id {} doesn't exist. You must create species first.".format(request_data['species'])
-            }
-            return Response(json.dumps(error_object), 400)
 
-    else:
-        invalid_obj = {
-            'error': "Valid Animal must contain: name, center_id, age and species"
-        }
-        return Response(json.dumps(invalid_obj), 400)
+    response = check_if_object_is_good(request_data)
+    if response:
+        return response
+
+    # If request_data is ok, proceed with adding animal
+    try:
+        Animal.add_animal(request_data['name'],
+                          caller_id,
+                          request_data['age'],
+                          request_data['species'],
+                          request_data['price'],
+                          request_data['description'])
+        response = Response('', status=201, mimetype='application/json')
+        return response
+    except TypeError as te:
+        return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
 
 
 @app.route('/animals<int:id>', methods=['PATCH'])
@@ -77,31 +69,23 @@ def update_animal(id, caller_id):
 @token_required
 def replace_animal(id, caller_id):
     request_data = request.get_json()
-    if Animal.is_valid_object(request_data):
-        species = Species.query.filter_by(id=request_data['species']).first()
-        if species:
-            try:
-                Animal.replace_animal(id,
-                                      caller_id,
-                                      request_data['name'],
-                                      request_data['age'],
-                                      species.id,
-                                      request_data['price'],
-                                      request_data['description'])
-                response = Response('', status=201, mimetype='application/json')
-                return response
-            except TypeError as te:
-                return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
-        else:
-            error_object = {
-                "error": "Species with id {} doesn't exist. You must create species first.".format(request_data['species'])
-            }
-            return Response(json.dumps(error_object), 400)
-    else:
-        invalid_obj = {
-            'error': "Valid Animal must contain: name, center_id, age and species"
-        }
-        return Response(json.dumps(invalid_obj), 400)
+
+    response = check_if_object_is_good(request_data)
+    if response:
+        return response
+
+    # If request_data is ok, proceed with replacing animal
+    try:
+        Animal.replace_animal(id,
+                              caller_id,
+                              request_data['name'],
+                              request_data['age'],
+                              request_data['species'],
+                              request_data['price'],
+                              request_data['description'])
+        return Response('', status=201, mimetype='application/json')
+    except TypeError as te:
+        return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
 
 
 @app.route('/animals/<int:id>', methods=['DELETE'])
@@ -116,8 +100,25 @@ def delete_animal(id, caller_id):
                         status=400,
                         mimetype='application/json')
 
-    response = Response(json.dumps({"error": "Unable to delete Animal with id {0}.".format(id)}),
-                        satus=400,
-                        mimetype='application/json')
-    return response
+    return Response(json.dumps({"error": "Unable to delete Animal with id {0}.".format(id)}),
+                    status=400,
+                    mimetype='application/json')
 
+
+def check_if_object_is_good(request_data):
+    # Check if all fields are there
+    if not Animal.is_valid_object(request_data):
+        invalid_obj = {
+            'error': "Valid Animal must contain: name, center_id, age and species"
+        }
+        return Response(json.dumps(invalid_obj), 400)
+
+    # Check if species with given id exist
+    species = Species.query.filter_by(id=request_data['species']).first()
+    if not species:
+        error_object = {
+            "error": "Species with id {} doesn't exist. You must create species first.".format(request_data['species'])
+        }
+        return Response(json.dumps(error_object), 400)
+
+    return None
