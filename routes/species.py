@@ -3,7 +3,7 @@ from flask import current_app as app
 from flask import jsonify, request, Response
 
 from models import Species
-
+from .center import token_required
 
 @app.route('/species', methods=['GET'])
 def get_species():
@@ -17,6 +17,7 @@ def get_speceies_by_id(id):
 
 
 @app.route('/species', methods=['POST'])
+@token_required
 def add_species():
     request_data = request.get_json()
     if Species.is_valid_object(request_data):

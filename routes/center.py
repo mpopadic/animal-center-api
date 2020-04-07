@@ -13,8 +13,8 @@ def token_required(f):
     def wrapper(*args, **kwargs):
         token = request.args.get('token')
         try:
-            jwt.decode(token, app.config['SECRET_KEY'])
-            return f(*args, **kwargs)
+            secrets = jwt.decode(token, app.config['SECRET_KEY'])
+            return f(caller_id=secrets['center_id'], *args, **kwargs)
         except:
             return jsonify({'error': 'Need a valid token to view this page'}), 401
 
@@ -55,7 +55,7 @@ def get_token():
         center = Center.query.filter_by(login=login, password=password).first()
         AccessRequest.add_access_request(center.id)
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=120)
-        token = jwt.encode({'exp': expiration_date}, app.config['SECRET_KEY'], algorithm='HS256')
+        token = jwt.encode({'exp': expiration_date, 'center_id': center.id}, app.config['SECRET_KEY'], algorithm='HS256')
         return token
     else:
         return jsonify({'error': "Not valid login and password"}), 400

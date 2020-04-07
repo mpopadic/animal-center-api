@@ -49,3 +49,56 @@ class Animal(db.Model):
     @staticmethod
     def is_valid_object(animal):
         return 'name' in animal and 'center_id' in animal and 'age' in animal and 'species' in animal
+
+    @staticmethod
+    def update_animal_center_id(_id, _center_id):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.center_id = _center_id
+        db.session.commit()
+
+    @staticmethod
+    def update_animal_name(_id, _name):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.name = _name
+        db.session.commit()
+
+    @staticmethod
+    def update_animal_age(_id, _age):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.age = _age
+        db.session.commit()
+
+    @staticmethod
+    def update_animal_species(_id, _species):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.species = _species
+        db.session.commit()
+
+    @staticmethod
+    def update_animal_price(_id, _price):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.price = _price
+        db.session.commit()
+
+    @staticmethod
+    def update_animal_age(_id, _description):
+        animal_to_update = Animal.query.filter_by(id=_id).first()
+        animal_to_update.description = _description
+        db.session.commit()
+
+
+    @staticmethod
+    def replace_animal(_id, _center_id, _name, _age, _species, _price=None, _description=None):
+        replace_animal = Animal.query.filter_by(id=_id).first()
+        replace_animal.center_id = _center_id
+        replace_animal.name = _name
+        replace_animal.age = _age
+        replace_animal.species = _species
+        if _price:
+            replace_animal.price = _price
+        if _description:
+            replace_animal.description = _description
+        db.session.commit()
+
+
+
