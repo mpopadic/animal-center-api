@@ -18,7 +18,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{0}'.format(os.path.join(base
 db.init_app(app)
 
 with app.app_context():
-    from routes import center
+    from routes import center, animal, species
     from models import AccessRequest, Animal, Center, Species
     db.create_all()
 
