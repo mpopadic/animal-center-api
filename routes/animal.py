@@ -2,7 +2,7 @@ import json
 from flask import current_app as app
 from flask import jsonify, request, Response
 
-from models import Animal, Species
+from models import Animal, Species, Center
 from .center import token_required
 
 
@@ -93,3 +93,22 @@ def replace_animal(id, caller_id):
             'error': "Valid Animal must contain: name, center_id, age and species"
         }
         return Response(json.dumps(invalid_obj), 400)
+
+
+@app.route('/animals/<int:id>', methods=['DELETE'])
+@token_required
+def delete_animal(id, caller_id):
+    owner = Center.query.filter_by(id=caller_id).first()
+    if id in [animal.id for animal in owner.animals]:
+        if Animal.delete_animal(id):
+            return Response("", status=204)
+    else:
+        return Response(json.dumps({"error": "You don't have rights to delete this animal"}),
+                        status=400,
+                        mimetype='application/json')
+
+    response = Response(json.dumps({"error": "Unable to delete Animal with id {0}.".format(id)}),
+                        satus=400,
+                        mimetype='application/json')
+    return response
+

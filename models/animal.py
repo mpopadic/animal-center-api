@@ -86,7 +86,6 @@ class Animal(db.Model):
         animal_to_update.description = _description
         db.session.commit()
 
-
     @staticmethod
     def replace_animal(_id, _center_id, _name, _age, _species, _price=None, _description=None):
         replace_animal = Animal.query.filter_by(id=_id).first()
@@ -100,5 +99,8 @@ class Animal(db.Model):
             replace_animal.description = _description
         db.session.commit()
 
-
-
+    @staticmethod
+    def delete_animal(_id):
+        is_successful = Animal.query.filter_by(id=_id).delete()
+        db.session.commit()
+        return bool(is_successful)
