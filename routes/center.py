@@ -5,7 +5,7 @@ from functools import wraps
 from flask import current_app as app
 from flask import jsonify, request, Response
 
-from models import Center
+from models import Center, AccessRequest
 
 
 def token_required(f):
@@ -52,8 +52,15 @@ def get_token():
     login = request.args.get('login')
     password = request.args.get('password')
     if Center.valid_credentials(login, password):
+        center = Center.query.filter_by(login=login, password=password).first()
+        AccessRequest.add_access_request(center.id)
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=120)
         token = jwt.encode({'exp': expiration_date}, app.config['SECRET_KEY'], algorithm='HS256')
         return token
     else:
         return jsonify({'error': "Not valid login and password"}), 400
+
+
+@app.route('/accesses')
+def get_all_accesses():
+    return jsonify(AccessRequest.get_all_access_requests())
