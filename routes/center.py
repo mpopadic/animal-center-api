@@ -36,9 +36,12 @@ def get_center_by_id(id):
 def register():
     request_data = request.get_json()
     if Center.is_valid_object(request_data):
-        Center.add_center(request_data['login'], request_data['password'], request_data['address'])
-        response = Response('', status=201, mimetype='application/json')
-        return response
+        try:
+            Center.add_center(request_data['login'], request_data['password'], request_data['address'])
+            response = Response('', status=201, mimetype='application/json')
+            return response
+        except TypeError as te:
+            return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
     else:
         invalid_obj = {
             'error': "Valid Center must contain: login, password and address"
@@ -52,7 +55,7 @@ def get_token():
     login = request.args.get('login')
     password = request.args.get('password')
     if Center.valid_credentials(login, password):
-        center = Center.query.filter_by(login=login, password=password).first()
+        center = Center.query.filter_by(_login=login, _password=password).first()
         AccessRequest.add_access_request(center.id)
         expiration_date = datetime.datetime.utcnow() + datetime.timedelta(seconds=120)
         token = jwt.encode({'exp': expiration_date, 'center_id': center.id}, app.config['SECRET_KEY'], algorithm='HS256')

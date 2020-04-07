@@ -2,19 +2,50 @@ import json
 
 from database import db
 
+
 class Center(db.Model):
     __tablename__ = "centers"
 
-    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    login = db.Column(db.String(30), nullable=False)
-    password = db.Column(db.String(50), nullable=False)
-    address = db.Column(db.String(50))
+    id = db.Column('id', db.Integer, autoincrement=True, primary_key=True)
+    _login = db.Column('login', db.String(30), nullable=False)
+    _password = db.Column('password', db.String(50), nullable=False)
+    _address = db.Column('address', db.String(50))
     animals = db.relationship("Animal", backref="owner")
 
     def __init__(self, login, password, address):
         self.login = login
         self.password = password
         self.address = address
+
+    @property
+    def login(self):
+        return self._login
+
+    @login.setter
+    def login(self, value):
+        if not isinstance(value, str):
+            raise TypeError('login must be a string')
+        self._login = value
+
+    @property
+    def password(self):
+        return self._password
+
+    @password.setter
+    def password(self, value):
+        if not isinstance(value, str):
+            raise TypeError('password must be a string')
+        self._password = value
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        if not isinstance(value, str):
+            raise TypeError('address must be a string')
+        self._address = value
 
     @staticmethod
     def json(center):
@@ -23,7 +54,9 @@ class Center(db.Model):
 
     @staticmethod
     def valid_credentials(_login, _password):
-        center = Center.query.filter_by(login=_login, password=_password).first()
+        center = Center.query.filter_by(_login=_login, _password=_password).first()
+        print("CENTER: ", center)
+        print("Type: ", type(center))
         if center:
             return True
         else:

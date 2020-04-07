@@ -5,12 +5,12 @@ class Animal(db.Model):
     __tablename__ = "animals"
 
     id = db.Column(db.Integer, primary_key=True)
-    center_id = db.Column(db.Integer, db.ForeignKey("centers.id"))
-    name = db.Column(db.String(50))
-    age = db.Column(db.Integer)
-    species = db.Column(db.Integer, db.ForeignKey('species.id'))
-    price = db.Column(db.Integer, nullable=True)
-    description = db.Column(db.String(120), nullable=True)
+    _center_id = db.Column('center_id', db.Integer, db.ForeignKey("centers.id"))
+    _name = db.Column('name', db.String(50))
+    _age = db.Column('age', db.Integer)
+    _species = db.Column('species', db.Integer, db.ForeignKey('species.id'))
+    _price = db.Column('price', db.Integer, nullable=True)
+    _description = db.Column('description', db.String(120), nullable=True)
 
     def __init__(self, center_id, name, age, species, price=None, description=None):
         self.center_id = center_id
@@ -19,6 +19,66 @@ class Animal(db.Model):
         self.species = species
         self.price = price
         self.description = description
+
+    @property
+    def center_id(self):
+        return self._center_id
+
+    @center_id.setter
+    def center_id(self, value):
+        if not isinstance(value, int) or type(value) is not int:
+            raise TypeError('center_id must be a int')
+        self._center_id = value
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str):
+            raise TypeError('name must be a string')
+        self._name = value
+
+    @property
+    def age(self):
+        return self._age
+
+    @age.setter
+    def age(self, value):
+        if not isinstance(value, int) or type(value) is not int:
+            raise TypeError('age must be a int')
+        self._age = value
+
+    @property
+    def species(self):
+        return self._species
+
+    @species.setter
+    def species(self, value):
+        if not isinstance(value, int) or type(value) is not int:
+            raise TypeError('species must be a int')
+        self._species = value
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if not isinstance(value, int) or type(value) is not int:
+            raise TypeError('price must be a int')
+        self._price = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if not isinstance(value, str):
+            raise TypeError('description must be a string')
+        self._description = value
 
     @staticmethod
     def json(animal):
@@ -48,7 +108,7 @@ class Animal(db.Model):
 
     @staticmethod
     def is_valid_object(animal):
-        return 'name' in animal and 'center_id' in animal and 'age' in animal and 'species' in animal
+        return 'name' in animal and 'age' in animal and 'species' in animal
 
     @staticmethod
     def update_animal_center_id(_id, _center_id):

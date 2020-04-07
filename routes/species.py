@@ -5,6 +5,7 @@ from flask import jsonify, request, Response
 from models import Species
 from .center import token_required
 
+
 @app.route('/species', methods=['GET'])
 def get_species():
     return jsonify({'species': Species.get_all_species()})
@@ -21,9 +22,12 @@ def get_speceies_by_id(id):
 def add_species():
     request_data = request.get_json()
     if Species.is_valid_object(request_data):
-        Species.add_species(request_data['name'], request_data['description'], request_data['price'])
-        response = Response('', status=201, mimetype='application/json')
-        return response
+        try:
+            Species.add_species(request_data['name'], request_data['description'], request_data['price'])
+            response = Response('', status=201, mimetype='application/json')
+            return response
+        except TypeError as te:
+            return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
     else:
         invalid_obj = {
             'error': "Valid Species must contain: name, description and price"

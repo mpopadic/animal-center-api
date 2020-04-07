@@ -5,15 +5,45 @@ class Species(db.Model):
     __tablename__ = "species"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    description = db.Column(db.String(120))
-    price = db.Column(db.Integer)
+    _name = db.Column('name', db.String(50))
+    _description = db.Column('description', db.String(120))
+    _price = db.Column('price', db.Integer)
     animals = db.relationship("Animal", backref="origin")
 
     def __init__(self, name, description, price):
         self.name = name
         self.description = description
         self.price = price
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not isinstance(value, str):
+            raise TypeError('name must be a string')
+        self._name = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        if not isinstance(value, str):
+            raise TypeError('description must be a string')
+        self._description = value
+
+    @property
+    def price(self):
+        return self._price
+
+    @price.setter
+    def price(self, value):
+        if not isinstance(value, int) or type(value) is not int:
+            raise TypeError('price must be a int')
+        self._price = value
 
     @staticmethod
     def json(species):
