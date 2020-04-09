@@ -77,6 +77,7 @@ class Center(db.Model):
         new_center = Center(_login, _password, _address)
         db.session.add(new_center)
         db.session.commit()
+        return new_center
 
     @staticmethod
     def is_valid_object(center):
