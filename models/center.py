@@ -55,8 +55,6 @@ class Center(db.Model):
     @staticmethod
     def valid_credentials(_login, _password):
         center = Center.query.filter_by(_login=_login, _password=_password).first()
-        print("CENTER: ", center)
-        print("Type: ", type(center))
         if center:
             return True
         else:

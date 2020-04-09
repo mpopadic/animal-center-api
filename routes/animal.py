@@ -4,14 +4,14 @@ from flask import jsonify, request, Response
 
 from models import Animal, Species, Center
 from .center import token_required
-
+from logger import write_to_log_file
 
 @app.route('/animals', methods=['GET'])
 def get_animals():
     return jsonify({'animals': Animal.get_all_animals()})
 
 
-@app.route('/animals/<int:id>')
+@app.route('/animals/<int:id>', methods=['GET'])
 def get_animal_by_id(id):
     animal = Animal.get_animal_by_id(id)
     return jsonify(animal)
@@ -20,6 +20,7 @@ def get_animal_by_id(id):
 @app.route('/animals', methods=['POST'])
 @token_required
 def add_animal(caller_id):
+
     request_data = request.get_json()
 
     response = check_if_object_is_good(request_data)
@@ -28,13 +29,14 @@ def add_animal(caller_id):
 
     # If request_data is ok, proceed with adding animal
     try:
-        Animal.add_animal(request_data['name'],
-                          caller_id,
-                          request_data['age'],
-                          request_data['species'],
-                          request_data['price'],
-                          request_data['description'])
+        new_animal = Animal.add_animal(request_data['name'],
+                                       caller_id,
+                                       request_data['age'],
+                                       request_data['species'],
+                                       request_data['price'],
+                                       request_data['description'])
         response = Response('', status=201, mimetype='application/json')
+        write_to_log_file(request.method, request.path, caller_id, 'Animal', "create", new_animal.id)
         return response
     except TypeError as te:
         return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
@@ -58,6 +60,7 @@ def update_animal(id, caller_id):
             Animal.update_animal_price(id, request_data['price'])
         if 'description' in request_data:
             Animal.update_animal_description(id, request_data['description'])
+        write_to_log_file(request.method, request.path, caller_id, 'Animal', "update", id)
     except TypeError as te:
         return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
 
@@ -83,6 +86,7 @@ def replace_animal(id, caller_id):
                               request_data['species'],
                               request_data['price'],
                               request_data['description'])
+        write_to_log_file(request.method, request.path, caller_id, 'Animal', "replace", replace_animal.id)
         return Response('', status=201, mimetype='application/json')
     except TypeError as te:
         return Response(json.dumps({"error": "{}".format(te)}), 400, mimetype='application/json')
@@ -94,6 +98,7 @@ def delete_animal(id, caller_id):
     owner = Center.query.filter_by(id=caller_id).first()
     if id in [animal.id for animal in owner.animals]:
         if Animal.delete_animal(id):
+            write_to_log_file(request.method, request.path, caller_id, 'Animal', "delete", id)
             return Response("", status=204)
     else:
         return Response(json.dumps({"error": "You don't have rights to delete this animal"}),

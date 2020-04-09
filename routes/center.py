@@ -13,9 +13,9 @@ def token_required(f):
     def wrapper(*args, **kwargs):
         token = request.args.get('token')
         try:
-            secrets = jwt.decode(token, app.config['SECRET_KEY'])
+            secrets = get_request_info_from_token(token)
             return f(caller_id=secrets['center_id'], *args, **kwargs)
-        except:
+        except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Need a valid token to view this page'}), 401
 
     return wrapper
@@ -69,3 +69,7 @@ def get_token():
 @app.route('/accesses')
 def get_all_accesses():
     return jsonify(AccessRequest.get_all_access_requests())
+
+
+def get_request_info_from_token(token):
+    return jwt.decode(token, app.config['SECRET_KEY'])

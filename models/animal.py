@@ -104,6 +104,7 @@ class Animal(db.Model):
         new_animal = Animal(_center_id, _name, _age, _species, _price, _description)
         db.session.add(new_animal)
         db.session.commit()
+        return new_animal
 
 
     @staticmethod

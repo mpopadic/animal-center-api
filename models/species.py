@@ -67,6 +67,7 @@ class Species(db.Model):
         new_species = Species(_name, _description, _price)
         db.session.add(new_species)
         db.session.commit()
+        return new_species
 
     @staticmethod
     def is_valid_object(species):
