@@ -15,7 +15,10 @@ Python version 3
 
 run ```python app.py``` to create sqlite3 database as db.sqlite3 file and run Flask API on localhost
 
- # TESTING
- Tests are located in `test` folder.
- 
- To run tests use command: ```python -m unittest```
+# TESTING
+Tests are located in `test` folder.
+
+To run tests use command: ```python -m unittest```
+
+![test results](./test/test_result.png)
+
