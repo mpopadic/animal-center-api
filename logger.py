@@ -15,5 +15,7 @@ logger.addHandler(file_handler)
 
 
 def write_to_log_file(method, url, caller_id, entity_type, entity_method, entity_id):
+    """Writes formatted message to predefined log file"""
+
     logger.info(f"{method}:{url}:{caller_id}:{entity_type}:{entity_method}:{entity_id}")
 

@@ -1,5 +1,5 @@
-# animal-center-api
-Animal Center API 
+# Synopsis
+Animal Center API.  
 
 ## Prerequisites
 Python version 3
@@ -20,5 +20,8 @@ Tests are located in `test` folder.
 
 To run tests use command: ```python -m unittest```
 
+Results look like:
 ![test results](./test/test_result.png)
 
+
+For more verbose results run: `python -m unittest -v`.

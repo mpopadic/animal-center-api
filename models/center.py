@@ -4,6 +4,8 @@ from database import db
 
 
 class Center(db.Model):
+    """This class represent centers table. Used to store Center objects in DB."""
+
     __tablename__ = "centers"
 
     id = db.Column('id', db.Integer, autoincrement=True, primary_key=True)
@@ -49,11 +51,13 @@ class Center(db.Model):
 
     @staticmethod
     def json(center):
+        """Converts given Center object to json formatted data"""
         return {'id': center.id, 'login': center.login, 'password': center.password,
                 'address': center.address, 'animals': ["{0} - {1} - {2}".format(a.name, a.id, a.species) for a in center.animals]}
 
     @staticmethod
     def valid_credentials(_login, _password):
+        """Checks if login and password are valid and returns boolean."""
         center = Center.query.filter_by(_login=_login, _password=_password).first()
         if center:
             return True
@@ -62,10 +66,12 @@ class Center(db.Model):
 
     @staticmethod
     def get_all_centers():
+        """Fetches all centers from DB."""
         return ['{0} - {1}'.format(center.login, center.id) for center in Center.query.all()]
 
     @staticmethod
     def get_center_by_id(_id):
+        """Fetches center from DB with given id. If doesn't exists returns empty dict."""
         center = Center.query.filter_by(id=_id).first()
         if center:
             return Center.json(center)
@@ -74,6 +80,7 @@ class Center(db.Model):
 
     @staticmethod
     def add_center(_login, _password, _address):
+        """Creates new Center in DB."""
         new_center = Center(_login, _password, _address)
         db.session.add(new_center)
         db.session.commit()
@@ -81,9 +88,8 @@ class Center(db.Model):
 
     @staticmethod
     def is_valid_object(center):
-        return center.get('login', None) is not None \
-               and center.get('password', None) is not None \
-               and center.get('address', None) is not None
+        """Checks if given object have all required properties for creating Center object"""
+        return 'login' in center and 'password' in center and 'address' in center
 
     def __repr__(self):
         center_object = {

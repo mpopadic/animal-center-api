@@ -2,6 +2,8 @@ from database import db
 
 
 class Animal(db.Model):
+    """This class represent animal table. Used to store animal objects in DB."""
+
     __tablename__ = "animals"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -82,6 +84,7 @@ class Animal(db.Model):
 
     @staticmethod
     def json(animal):
+        """Converts given Animal object to json formatted data"""
         return {'id': animal.id, 'center_id': animal.center_id, 'name': animal.name,
                 'age': animal.age, 'species': animal.species, 'price': animal.price,
                 'description': animal.description
@@ -89,10 +92,12 @@ class Animal(db.Model):
 
     @staticmethod
     def get_all_animals():
+        """Fetches all animal objects from animals table."""
         return [Animal.json(animal) for animal in Animal.query.all()]
 
     @staticmethod
     def get_animal_by_id(_id):
+        """Fetch animal from animals table with provided id"""
         animal = Animal.query.filter_by(id=_id).first()
         if animal:
             return Animal.json(animal)
@@ -101,6 +106,7 @@ class Animal(db.Model):
 
     @staticmethod
     def add_animal(_name, _center_id, _age, _species, _price=None, _description=None):
+        """Adds new animal object in animals table."""
         new_animal = Animal(_center_id, _name, _age, _species, _price, _description)
         db.session.add(new_animal)
         db.session.commit()
@@ -109,46 +115,54 @@ class Animal(db.Model):
 
     @staticmethod
     def is_valid_object(animal):
+        """Checks if given object has all properties required to create instance of Animal class."""
         return 'name' in animal and 'age' in animal and 'species' in animal
 
     @staticmethod
     def update_animal_center_id(_id, _center_id):
+        """Updates center_id of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.center_id = _center_id
         db.session.commit()
 
     @staticmethod
     def update_animal_name(_id, _name):
+        """Updates name of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.name = _name
         db.session.commit()
 
     @staticmethod
     def update_animal_age(_id, _age):
+        """Updates age of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.age = _age
         db.session.commit()
 
     @staticmethod
     def update_animal_species(_id, _species):
+        """Updates species of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.species = _species
         db.session.commit()
 
     @staticmethod
     def update_animal_price(_id, _price):
+        """Updates price of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.price = _price
         db.session.commit()
 
     @staticmethod
-    def update_animal_age(_id, _description):
+    def update_animal_description(_id, _description):
+        """Updates description of animal object defined with provided id."""
         animal_to_update = Animal.query.filter_by(id=_id).first()
         animal_to_update.description = _description
         db.session.commit()
 
     @staticmethod
     def replace_animal(_id, _center_id, _name, _age, _species, _price=None, _description=None):
+        """Replace whole animal row, that have given id, in animals table with provided new values."""
         replace_animal = Animal.query.filter_by(id=_id).first()
         replace_animal.center_id = _center_id
         replace_animal.name = _name
@@ -162,6 +176,7 @@ class Animal(db.Model):
 
     @staticmethod
     def delete_animal(_id):
+        """Deletes animal in animals table with provided id."""
         is_successful = Animal.query.filter_by(id=_id).delete()
         db.session.commit()
         return bool(is_successful)

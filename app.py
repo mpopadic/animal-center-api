@@ -6,12 +6,13 @@ from config import settings
 
 
 def create_app():
+    """Creates and runs Flask API application"""
+
     # Init app
     app = Flask(__name__)
     basedir = os.path.abspath(os.path.dirname(__file__))
 
     app.config['SECRET_KEY'] = settings.get('settings', 'secret_key')
-
 
     # Database
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -30,6 +31,8 @@ def create_app():
 
 
 def create_test_app():
+    """Creates app and initialize db in memory for testing purposes"""
+
     # Init app
     app = Flask(__name__)
     app.config['SECRET_KEY'] = settings.get('settings', 'secret_key')
